@@ -8,62 +8,71 @@
 #define MAXCLIENTES			4									// Maximo de Clientes 
 #define MAXJOGADORES		4									// Max jogadores permitido
 #define NUMTIPOOBJECTOS		10									// Tipo de objectos existentes
-#define MAX_LINHAS			40									//Limite maximo de Linhas
-#define MAX_COLUNAS			80
-#define MIN_LINHAS			10
-#define MIN_COLUNAS			10
+#define MAX_LINHAS			40									// Limite maximo de Linhas
+#define MAX_COLUNAS			80									// Limite maximo de Colunas
+#define MIN_LINHAS			10									// Limite minimo de Linhas
+#define MIN_COLUNAS			10									// Limite minimo de Linhas
+#define MAX_PEDIDOS			20									// Limite maximo na Fila de Pedidos
 #define SIZEMENSAGEM		sizeof(Msg)							// Tamanho da estrutura Msg
 #define SIZE_MEM_GERAL		sizeof(MemGeral)					// Tamanho da Memoria Partilhada Geral
 #define NOME_MEM_GERAL		TEXT("SharedMemGeral")				// Nome da Memoria Partilhada Geral
 #define SEM_MEM_GERAL		TEXT("SemaforoSharedMemGeral")		// Nome do Semaforo da Memoria Partilha Geral
 #define EVNT_MEM_GERAL		TEXT("EventoSharedMemGeral")		// Nome do Evento da Memoria Partilha Geral
 #define FILE_MAP_NAME		TEXT("backup.txt")					// Nome do Ficheiro mapeado em memoria
+
 //Estados de Jogo
-#define CRIACAOJOGO		1
-#define ASSOCIACAOJOGO	2
-#define DECORRERJOGO	3
-#define FINALJOGO		4
-//Movimentos das Serpentes
-#define CIMA			1
-#define BAIXO			2
-#define ESQUERDA		3
-#define DIREITA			4
+#define CRIACAOJOGO			1
+#define ASSOCIACAOJOGO		2
+#define DECORRERJOGO		3
+#define FINALJOGO			4
 
 //Estados do Jogador
-#define VIVO			1
-#define MORTO			2
+#define VIVO				1
+#define MORTO				2
 
-//Tipos de Mensagem (PIPES)
-#define CRIARJOGO		5
-#define JUNTARJOGO		6
-#define ACTUALIZAMAPA	7
-#define INICIARJOGO		8
+//Movimentos das Serpentes (usado na fila de pedidos e nos pipes)
+#define CIMA_JOGADOR1		1
+#define BAIXO_JOGADOR1		2
+#define ESQUERDA_JOGADOR1	3
+#define DIREITA_JOGADOR1	4
+#define CIMA_JOGADOR2		5
+#define BAIXO_JOGADOR2		6
+#define ESQUERDA_JOGADOR2	7
+#define DIREITA_JOGADOR2	8
+
+//Tipos de Mensagem (usado na fila de pedidos e nos pipes)
+#define CRIARJOGO			9
+#define ASSOCIAR_JOGADOR1	10
+#define ASSOCIAR_JOGADOR2	11
+#define INICIARJOGO			12
 
 //Objectos
-#define ALIMENTO		1 
-#define GELO			2
-#define GRANADA			3 
-#define VODKA			4 
-#define OLEO			5 
-#define COLA			6 
-#define O_VODKA			7 
-#define O_OLEO			8 
-#define O_COLA			9 
+#define ALIMENTO			1 
+#define GELO				2
+#define GRANADA				3 
+#define VODKA				4 
+#define OLEO				5 
+#define COLA				6 
+#define O_VODKA				7 
+#define O_OLEO				8 
+#define O_COLA				9 
+#define PAREDE				10 
+
 
 //Valores configuraveis por defeito
-#define LINHAS			20
-#define COLUNAS			20
-#define TAMANHOSNAKE	3
-#define NUMAUTOSNAKE	1
-#define NUMOBJETOS		6
+#define LINHAS				20
+#define COLUNAS				20
+#define TAMANHOSNAKE		3
+#define NUMAUTOSNAKE		1
+#define NUMOBJETOS			6
 
 /* ----------------------------------------------------- */
 /*  TIPOS												 */
 /* ----------------------------------------------------- */
 typedef struct {
-	TCHAR username[SIZE_USERNAME];
+	int PId;
 	int codigoMsg;
-}Msg;
+}Mensagem;
 
 typedef struct {
 	TCHAR username[SIZE_USERNAME];
@@ -79,7 +88,7 @@ typedef struct {
 	int pontuacao;
 	int direcao;
 	int estadoJogador;
-	int posicoesCobra[MAX_COLUNAS * MAX_LINHAS] [2];
+	int posicoesCobra[MAX_COLUNAS * MAX_LINHAS][2];
 }Cobras;
 
 typedef struct {
@@ -97,14 +106,22 @@ typedef struct {
 }Objecto;
 
 typedef struct {
-	Msg mensagem;							//Mensagem para utilizadores saberem o que há de novo na memória.
-	int estadoJogo;	
-	int vagasJogadores;
-	TCHAR criador[SIZE_USERNAME];
+	int pid;
+	int codigoPedido;
 	ConfigInicial config;
+	TCHAR username[SIZE_USERNAME];
 	Objecto objectos[NUMTIPOOBJECTOS];
-	Cobras jogadores[MAXJOGADORES];
-	TCHAR mapa[MAX_LINHAS][MAX_COLUNAS];
+}Pedido;
+
+typedef struct {
+	Pedido pedidos[MAX_PEDIDOS];
+	int frente;
+	int tras;
+}Fila_Pedidos;
+
+typedef struct {
+	Fila_Pedidos fila;
+	int mapa[MAX_LINHAS][MAX_COLUNAS];
+	int colunas;
+	int linhas;
 }MemGeral;
-
-
