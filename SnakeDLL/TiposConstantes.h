@@ -12,13 +12,15 @@
 #define MAX_COLUNAS			80									// Limite maximo de Colunas
 #define MIN_LINHAS			10									// Limite minimo de Linhas
 #define MIN_COLUNAS			10									// Limite minimo de Linhas
-#define MAX_PEDIDOS			20									// Limite maximo na Fila de Pedidos
+#define MAX_PEDIDOS			5									// Limite maximo na Fila de Pedidos
 #define SIZEMENSAGEM		sizeof(Msg)							// Tamanho da estrutura Msg
 #define SIZE_MEM_GERAL		sizeof(MemGeral)					// Tamanho da Memoria Partilhada Geral
 #define NOME_MEM_GERAL		TEXT("SharedMemGeral")				// Nome da Memoria Partilhada Geral
-#define SEM_MEM_GERAL		TEXT("SemaforoSharedMemGeral")		// Nome do Semaforo da Memoria Partilha Geral
-#define EVNT_MEM_GERAL		TEXT("EventoSharedMemGeral")		// Nome do Evento da Memoria Partilha Geral
-#define FILE_MAP_NAME		TEXT("backup.txt")					// Nome do Ficheiro mapeado em memoria
+#define NOME_SEM_MAPA		TEXT("SemaforoMapa")				// Nome do Semaforo do Mapa
+#define NOME_EVNT_MAPA		TEXT("EventoMapa")					// Nome do Evento do Mapa
+#define NOME_SEM_PODELER	TEXT("SemaforoPedidosPodeLer")		// Nome do Semaforo dos Pedidos para avisar que há pedidos para ler
+#define NOME_SEM_PODESCRVR	TEXT("SemaforoPedidosPodeEscrever")	// Nome do Semaforo dos Pedidos para avisar que há espaço para escrever
+#define NOME_FILE_MAP		TEXT("backup.txt")					// Nome do Ficheiro mapeado em memoria
 
 //Estados de Jogo
 #define CRIACAOJOGO			1
@@ -46,6 +48,13 @@
 #define ASSOCIAR_JOGADOR2	11
 #define INICIARJOGO			12
 
+//Identificador de Jogador para saber se é o jogador 1 ou 2 de determinada maquina
+#define JOGADOR1			1
+#define JOGADOR2			2
+
+/*************************ELEMENTOS DO MAPA*************************/
+#define PAREDE				-1
+#define ESPACOVAZIO			0
 //Objectos
 #define ALIMENTO			1 
 #define GELO				2
@@ -55,8 +64,7 @@
 #define COLA				6 
 #define O_VODKA				7 
 #define O_OLEO				8 
-#define O_COLA				9 
-#define PAREDE				10 
+#define O_COLA				9  
 
 
 //Valores configuraveis por defeito
@@ -82,6 +90,8 @@ typedef struct {
 }Jogador;
 
 typedef struct {
+	int pid;
+	int jogador;
 	TCHAR username[SIZE_USERNAME];
 	int tamanho;
 	int porAparecer;
@@ -114,6 +124,12 @@ typedef struct {
 }Pedido;
 
 typedef struct {
+	int pid;
+	int resposta;
+	int valor;
+}Resposta;
+
+typedef struct {
 	Pedido pedidos[MAX_PEDIDOS];
 	int frente;
 	int tras;
@@ -124,4 +140,5 @@ typedef struct {
 	int mapa[MAX_LINHAS][MAX_COLUNAS];
 	int colunas;
 	int linhas;
+	Resposta respostas[MAXCLIENTES];
 }MemGeral;

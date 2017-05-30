@@ -4,34 +4,42 @@
 
 //Definição da variável global
 HANDLE hMemoria;
-HANDLE hSemMemoria;
-HANDLE hEventoMemoria;
+HANDLE hSemaforoMapa;
+HANDLE hPodeLerPedido;
+HANDLE hPodeEscreverPedido;
+HANDLE hEventoMapa;
 HANDLE hFicheiro;
 MemGeral *vistaPartilhaGeral;
 
 void inserePedido(Pedido param);
-void apagaPedido();
+
 
 int preparaMemoriaPartilhada(void) {
 
-	hFicheiro = CreateFile(FILE_MAP_NAME, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	hFicheiro = CreateFile(NOME_FILE_MAP, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	hMemoria = CreateFileMapping(hFicheiro, NULL, PAGE_READWRITE, 0, SIZE_MEM_GERAL, NOME_MEM_GERAL);
 
 	vistaPartilhaGeral = (MemGeral*)MapViewOfFile(hMemoria, FILE_MAP_ALL_ACCESS, 0, 0, SIZE_MEM_GERAL);
 
-	hEventoMemoria = CreateEvent(NULL, TRUE, FALSE, EVNT_MEM_GERAL);
-	hSemMemoria = CreateSemaphore(NULL, MAXCLIENTES, MAXCLIENTES, SEM_MEM_GERAL);
+	hEventoMapa = CreateEvent(NULL, TRUE, FALSE, NOME_EVNT_MAPA);
+	hSemaforoMapa = CreateSemaphore(NULL, MAXCLIENTES, MAXCLIENTES, NOME_SEM_MAPA);
 
-	if (hMemoria == NULL || hEventoMemoria == NULL || hSemMemoria == NULL) {
+	hPodeLerPedido = CreateSemaphore(NULL, 0, MAX_PEDIDOS, NOME_SEM_PODELER);
+	hPodeEscreverPedido = CreateSemaphore(NULL, MAX_PEDIDOS, MAX_PEDIDOS, NOME_SEM_PODESCRVR);
+
+	if (hMemoria == NULL || hEventoMapa == NULL || hSemaforoMapa == NULL || hPodeLerPedido == NULL || hPodeEscreverPedido == NULL) {
 		_tprintf(TEXT("[Erro] Criação de objectos do Windows(%d)\n"), GetLastError());
 		return -1;
 	}
+
+	vistaPartilhaGeral->fila.frente = 0;
+	vistaPartilhaGeral->fila.tras = 0;
 	return 1;
 }
 
-void esperaPorActualizacao(void) {
-	WaitForSingleObject(hEventoMemoria, INFINITE);
+void esperaPorActualizacaoMapa(void) {
+	WaitForSingleObject(hEventoMapa, INFINITE);
 }
 
 /*
@@ -50,19 +58,27 @@ ReleaseSemaphore(hSemMemoria, 1, NULL);
 
 void fechaMemoriaPartilhada(void) {
 	CloseHandle(hMemoria);
-	CloseHandle(hSemMemoria);
-	CloseHandle(hEventoMemoria);
+	CloseHandle(hSemaforoMapa);
+	CloseHandle(hEventoMapa);
 	UnmapViewOfFile(vistaPartilhaGeral);
 }
 
-void getMapa(MemGeral *param) {
-	WaitForSingleObject(hSemMemoria, INFINITE);
+void getMapa(int mapa[MAX_LINHAS][MAX_COLUNAS]) {
+	WaitForSingleObject(hSemaforoMapa, INFINITE);
 	for (int i = 0; i < vistaPartilhaGeral->linhas; i++) {
 		for (int j = 0; j < vistaPartilhaGeral->colunas; j++) {
-			param->mapa[i][j] = vistaPartilhaGeral->mapa[i][j];
+			mapa[i][j] = vistaPartilhaGeral->mapa[i][j];
 		}
 	}
-	ReleaseSemaphore(hSemMemoria, 1, NULL);
+	ReleaseSemaphore(hSemaforoMapa, 1, NULL);
+}
+
+void getLimitesMapa(int *linhas, int *colunas) {
+	WaitForSingleObject(hSemaforoMapa, INFINITE);
+	*linhas=vistaPartilhaGeral->linhas;
+	*colunas = vistaPartilhaGeral->colunas;
+	ReleaseSemaphore(hSemaforoMapa, 1, NULL);
+	
 }
 
 int pede_CriaJogo(ConfigInicial param, int pid) {
@@ -70,15 +86,10 @@ int pede_CriaJogo(ConfigInicial param, int pid) {
 	aux.config = param;
 	aux.pid = pid;
 	aux.codigoPedido = CRIARJOGO;
-	for (int i = 0; i < MAXCLIENTES; i++) {
-		WaitForSingleObject(hSemMemoria, INFINITE);
-	}
-
+	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
+	
 	inserePedido(aux);
 
-	SetEvent(hEventoMemoria);
-	ResetEvent(hEventoMemoria);
-	ReleaseSemaphore(hSemMemoria, MAXCLIENTES, NULL);
 	return 1;
 }
 
@@ -86,15 +97,10 @@ int pede_IniciaJogo(int pid) {
 	Pedido aux;
 	aux.pid = pid;
 	aux.codigoPedido = INICIARJOGO;
-	for (int i = 0; i < MAXCLIENTES; i++) {
-		WaitForSingleObject(hSemMemoria, INFINITE);
-	}
-
+	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
+	
 	inserePedido(aux);
 
-	SetEvent(hEventoMemoria);
-	ResetEvent(hEventoMemoria);
-	ReleaseSemaphore(hSemMemoria, MAXCLIENTES, NULL);
 	return 1;
 }
 
@@ -104,20 +110,27 @@ int pede_AssociaJogo(int Pid, TCHAR username[SIZE_USERNAME], int codigoPedido) {
 	aux.pid = Pid;
 	_tcscpy_s(aux.username, SIZE_USERNAME, username);
 
-	for (int i = 0; i < MAXCLIENTES; i++) {
-		WaitForSingleObject(hSemMemoria, INFINITE);
-	}
-
 	inserePedido(aux);
 
-	SetEvent(hEventoMemoria);
-	ResetEvent(hEventoMemoria);
-	ReleaseSemaphore(hSemMemoria, MAXCLIENTES, NULL);
 	return 1;
 }
 
 
+void mudaDirecao(int direcao, int Pid) {
+	Pedido aux;
+	aux.pid = Pid;
+	aux.codigoPedido = direcao;
+	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
+
+	inserePedido(aux);
+}
+
+
 void inserePedido(Pedido param) {
+
+	//Espera que haja uma vaga para escrever um pedido
+	WaitForSingleObject(hPodeEscreverPedido, INFINITE);
+
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].pid = param.pid;
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].codigoPedido = param.codigoPedido;
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].config = param.config;
@@ -126,33 +139,10 @@ void inserePedido(Pedido param) {
 		vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].objectos[i] = param.objectos[i];
 	vistaPartilhaGeral->fila.tras++;
 	//chegou ao fim da fila temos de voltar a por desde o inicio da fila
-	if (vistaPartilhaGeral->fila.tras == MAX_PEDIDOS - 1) {
+	if (vistaPartilhaGeral->fila.tras == MAX_PEDIDOS) {
 		vistaPartilhaGeral->fila.tras = 0;
 	}
-	//se a frente estiver a apontar para -1 quer dizer que a fila estava vazia e temos de por a apontar para a primeira posição
-	if (vistaPartilhaGeral->fila.frente == -1) {
-		vistaPartilhaGeral->fila.frente = 0;
-	}
-}
 
-void apagaPedido() {
-	//se a frente for maior que a parte de tras temos a fila vazia e podemos por os dois indices para o inicio
-	if (vistaPartilhaGeral->fila.frente > vistaPartilhaGeral->fila.tras) {
-		vistaPartilhaGeral->fila.frente = -1;
-		vistaPartilhaGeral->fila.tras = 0;
-	}
-	vistaPartilhaGeral->fila.frente++;
-}
-
-void mudaDirecao(int direcao, int Pid) {
-	Pedido aux;
-	aux.pid = Pid;
-	aux.codigoPedido = direcao;
-	for (int i = 0; i < MAXCLIENTES; i++) {
-		WaitForSingleObject(hSemMemoria, INFINITE);
-	}
-
-	inserePedido(aux);
-
-	ReleaseSemaphore(hSemMemoria, MAXCLIENTES, NULL);
+	//Liberta uma vaga para Ler um pedido
+	ReleaseSemaphore(hPodeLerPedido, 1, NULL);
 }
