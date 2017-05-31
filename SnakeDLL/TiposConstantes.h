@@ -7,7 +7,7 @@
 #define TAM_BUFFER			20									// Tamanho de Buffer a utilizar no CLiente
 #define MAXCLIENTES			4									// Maximo de Clientes 
 #define MAXJOGADORES		4									// Max jogadores permitido
-#define MAXOBJECTOS			160									// Max objectos no mapa permitidos
+#define MAXOBJECTOS			30									// Max objectos no mapa permitidos
 #define MAX_LINHAS			40									// Limite maximo de Linhas
 #define MAX_COLUNAS			80									// Limite maximo de Colunas
 #define MIN_LINHAS			10									// Limite minimo de Linhas
@@ -61,14 +61,17 @@
 #define COLA				6 
 #define O_VODKA				7 
 #define O_OLEO				8 
-#define O_COLA				9  
+#define O_COLA				9 
+#define SURPRESA			10  
 
 //Valores configuraveis por defeito
 #define LINHAS				40
 #define COLUNAS				40
 #define TAMANHOSNAKE		3
+#define NUMJOGADORES		1
 #define NUMAUTOSNAKE		1
 #define NUMOBJETOS			6
+#define SEGUNDOSMAPA		10
 
 //Factores de Lentidão
 #define LENTIDAO			1000 //valor em milisegundos da lentidão das cobras
@@ -76,6 +79,18 @@
 #define NORMAL				1	 //Factores que irão ser multiplicados pela Lentidao para alterar a velocidade das Cobras
 #define RAPIDO				0.5
 #define LENTO				1.5
+
+//CONSTANTES DE PROBABILIDADES
+#define PROB_ALIMENTO		500
+#define PROB_GELO			700
+#define PROB_OLEO			900
+#define PROB_COLA			1100
+#define PROB_VODKA			1150
+#define PROB_O_VODKA		1200
+#define PROB_O_OLEO			1250
+#define PROB_O_COLA			1300
+#define PROB_SURPRESA		1350
+#define PROB_GRANADA		1400
 
 /* ----------------------------------------------------- */
 /*  TIPOS												 */
@@ -117,7 +132,6 @@ typedef struct {
 //Estrutura para manutenção dos objectos no jogo
 typedef struct {
 	int Tipo;				//Tipo de Objecto (1-Alimento, 2-Gelo, 3-Granada, 4-Vodka, 5-Oleo, 6-Cola, 7-OVodka, 8-OOleo, 9-OCola)
-	int S;					//Segundos que fica no mapa
 	int linha;				//Posição no mapa
 	int coluna;				//Posição no mapa
 	int segundosRestantes;	//Segundos que restam ao objecto para este desaparecer
