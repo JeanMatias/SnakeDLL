@@ -116,10 +116,11 @@ int pede_AssociaJogo(int Pid, TCHAR username[SIZE_USERNAME], int codigoPedido) {
 }
 
 
-void mudaDirecao(int direcao, int Pid) {
+void mudaDirecao(int direcao, int Pid, int jogador) {
 	Pedido aux;
 	aux.pid = Pid;
 	aux.codigoPedido = direcao;
+	aux.jogador = jogador;
 	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
 
 	inserePedido(aux);
@@ -134,9 +135,10 @@ void inserePedido(Pedido param) {
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].pid = param.pid;
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].codigoPedido = param.codigoPedido;
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].config = param.config;
+	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].jogador = param.jogador;
 	_tcscpy_s(vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].username, SIZE_USERNAME, param.username);
 	for (int i = 0; i < NUMTIPOOBJECTOS; i++)
-		vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].objectos[i] = param.objectos[i];
+		vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].objectosConfig[i] = param.objectosConfig[i];
 	vistaPartilhaGeral->fila.tras++;
 	//chegou ao fim da fila temos de voltar a por desde o inicio da fila
 	if (vistaPartilhaGeral->fila.tras == MAX_PEDIDOS) {

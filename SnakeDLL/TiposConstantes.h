@@ -7,12 +7,13 @@
 #define TAM_BUFFER			20									// Tamanho de Buffer a utilizar no CLiente
 #define MAXCLIENTES			4									// Maximo de Clientes 
 #define MAXJOGADORES		4									// Max jogadores permitido
-#define NUMTIPOOBJECTOS		10									// Tipo de objectos existentes
+#define MAXOBJECTOS			160									// Max objectos no mapa permitidos
 #define MAX_LINHAS			40									// Limite maximo de Linhas
 #define MAX_COLUNAS			80									// Limite maximo de Colunas
 #define MIN_LINHAS			10									// Limite minimo de Linhas
 #define MIN_COLUNAS			10									// Limite minimo de Linhas
 #define MAX_PEDIDOS			5									// Limite maximo na Fila de Pedidos
+#define NUMTIPOOBJECTOS		10									// Tipo de objectos existentes
 #define SIZEMENSAGEM		sizeof(Msg)							// Tamanho da estrutura Msg
 #define SIZE_MEM_GERAL		sizeof(MemGeral)					// Tamanho da Memoria Partilhada Geral
 #define NOME_MEM_GERAL		TEXT("SharedMemGeral")				// Nome da Memoria Partilhada Geral
@@ -33,20 +34,16 @@
 #define MORTO				2
 
 //Movimentos das Serpentes (usado na fila de pedidos e nos pipes)
-#define CIMA_JOGADOR1		1
-#define BAIXO_JOGADOR1		2
-#define ESQUERDA_JOGADOR1	3
-#define DIREITA_JOGADOR1	4
-#define CIMA_JOGADOR2		5
-#define BAIXO_JOGADOR2		6
-#define ESQUERDA_JOGADOR2	7
-#define DIREITA_JOGADOR2	8
+#define CIMA				1
+#define BAIXO				2
+#define ESQUERDA			3
+#define DIREITA				4
 
 //Tipos de Mensagem (usado na fila de pedidos e nos pipes)
-#define CRIARJOGO			9
-#define ASSOCIAR_JOGADOR1	10
-#define ASSOCIAR_JOGADOR2	11
-#define INICIARJOGO			12
+#define CRIARJOGO			5
+#define ASSOCIAR_JOGADOR1	6
+#define ASSOCIAR_JOGADOR2	7
+#define INICIARJOGO			8
 
 //Identificador de Jogador para saber se é o jogador 1 ou 2 de determinada maquina
 #define JOGADOR1			1
@@ -66,13 +63,19 @@
 #define O_OLEO				8 
 #define O_COLA				9  
 
-
 //Valores configuraveis por defeito
-#define LINHAS				20
-#define COLUNAS				20
+#define LINHAS				40
+#define COLUNAS				40
 #define TAMANHOSNAKE		3
 #define NUMAUTOSNAKE		1
 #define NUMOBJETOS			6
+
+//Factores de Lentidão
+#define LENTIDAO			1000 //valor em milisegundos da lentidão das cobras
+#define SEGUNDO				1000 //valor em milisegundos de um segundo para ser usado nos objectos
+#define NORMAL				1	 //Factores que irão ser multiplicados pela Lentidao para alterar a velocidade das Cobras
+#define RAPIDO				0.5
+#define LENTO				1.5
 
 /* ----------------------------------------------------- */
 /*  TIPOS												 */
@@ -98,6 +101,7 @@ typedef struct {
 	int pontuacao;
 	int direcao;
 	int estadoJogador;
+	int factorLentidao;
 	int posicoesCobra[MAX_COLUNAS * MAX_LINHAS][2];
 }Cobras;
 
@@ -110,17 +114,28 @@ typedef struct {
 	int C;			//Tamanho do Mapa em Colunas
 }ConfigInicial;
 
+//Estrutura para manutenção dos objectos no jogo
+typedef struct {
+	int Tipo;				//Tipo de Objecto (1-Alimento, 2-Gelo, 3-Granada, 4-Vodka, 5-Oleo, 6-Cola, 7-OVodka, 8-OOleo, 9-OCola)
+	int S;					//Segundos que fica no mapa
+	int linha;				//Posição no mapa
+	int coluna;				//Posição no mapa
+	int segundosRestantes;	//Segundos que restam ao objecto para este desaparecer
+}Objecto;
+
+//Estrutura de configuração dos objectos
 typedef struct {
 	int Tipo;		//Tipo de Objecto (1-Alimento, 2-Gelo, 3-Granada, 4-Vodka, 5-Oleo, 6-Cola, 7-OVodka, 8-OOleo, 9-OCola)
 	int S;			//Segundos que fica no mapa
-}Objecto;
+}ConfigObjecto;
 
 typedef struct {
 	int pid;
 	int codigoPedido;
+	int jogador;
 	ConfigInicial config;
 	TCHAR username[SIZE_USERNAME];
-	Objecto objectos[NUMTIPOOBJECTOS];
+	ConfigObjecto objectosConfig[NUMTIPOOBJECTOS];
 }Pedido;
 
 typedef struct {
