@@ -33,6 +33,10 @@
 #define VIVO				1
 #define MORTO				2
 
+//Tipos de Servidor
+#define LOCAL				1
+#define REMOTO				2
+
 //Movimentos das Serpentes (usado na fila de pedidos e nos pipes)
 #define CIMA				1
 #define BAIXO				2
