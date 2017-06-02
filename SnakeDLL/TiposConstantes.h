@@ -32,6 +32,9 @@
 //Estados do Jogador
 #define VIVO				1
 #define MORTO				2
+#define BEBADO				3
+#define LEBRE				4
+#define TARTARUGA			5
 
 //Tipos de Servidor
 #define LOCAL				1
@@ -48,6 +51,7 @@
 #define ASSOCIAR_JOGADOR1	6
 #define ASSOCIAR_JOGADOR2	7
 #define INICIARJOGO			8
+#define REGISTARCLIENTE		9
 
 //Identificador de Jogador para saber se é o jogador 1 ou 2 de determinada maquina
 #define JOGADOR1			1

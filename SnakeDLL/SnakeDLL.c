@@ -16,7 +16,7 @@ void inserePedido(Pedido param);
 
 int preparaMemoriaPartilhada(void) {
 
-	hFicheiro = CreateFile(NOME_FILE_MAP, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	//hFicheiro = CreateFile(NOME_FILE_MAP, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	hMemoria = CreateFileMapping(hFicheiro, NULL, PAGE_READWRITE, 0, SIZE_MEM_GERAL, NOME_MEM_GERAL);
 
@@ -41,20 +41,6 @@ int preparaMemoriaPartilhada(void) {
 void esperaPorActualizacaoMapa(void) {
 	WaitForSingleObject(hEventoMapa, INFINITE);
 }
-
-/*
-void leMemoriaPartilhada(MemGeral* param) {
-
-WaitForSingleObject(hSemMemoria, INFINITE);
-
-param->estadoJogo = vistaPartilhaGeral->estadoJogo;
-param->mensagem.codigoMsg = vistaPartilhaGeral->mensagem.codigoMsg;
-_tcscpy_s(param->mensagem.username, SIZE_USERNAME, vistaPartilhaGeral->mensagem.username);
-param->config.C = vistaPartilhaGeral->config.C;
-param->config.L = vistaPartilhaGeral->config.L;
-
-ReleaseSemaphore(hSemMemoria, 1, NULL);
-}*/
 
 void fechaMemoriaPartilhada(void) {
 	CloseHandle(hMemoria);
