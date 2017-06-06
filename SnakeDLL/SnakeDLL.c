@@ -9,7 +9,10 @@ HANDLE hPodeLerPedido;
 HANDLE hPodeEscreverPedido;
 HANDLE hEventoMapa;
 HANDLE hFicheiro;
+HANDLE hMemResposta;
+HANDLE hEventoResposta;
 MemGeral *vistaPartilhaGeral;
+Resposta *vistaResposta;
 
 void inserePedido(Pedido param);
 
@@ -18,7 +21,7 @@ int preparaMemoriaPartilhada(void) {
 
 	//hFicheiro = CreateFile(NOME_FILE_MAP, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-	hMemoria = CreateFileMapping(hFicheiro, NULL, PAGE_READWRITE, 0, SIZE_MEM_GERAL, NOME_MEM_GERAL);
+	hMemoria = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, SIZE_MEM_GERAL, NOME_MEM_GERAL);
 
 	vistaPartilhaGeral = (MemGeral*)MapViewOfFile(hMemoria, FILE_MAP_ALL_ACCESS, 0, 0, SIZE_MEM_GERAL);
 
@@ -35,6 +38,28 @@ int preparaMemoriaPartilhada(void) {
 
 	vistaPartilhaGeral->fila.frente = 0;
 	vistaPartilhaGeral->fila.tras = 0;
+	return 1;
+}
+
+int preparaMemoriaPartilhadaResposta(int pid) {
+	TCHAR aux[TAM_BUFFER];
+	TCHAR aux2[TAM_BUFFER];
+
+	//concatenar pid com nome da memoria para ficar com um nome unico
+	_stprintf_s(aux, TAM_BUFFER, NOME_MEM_RESPOSTA, pid);
+
+	hMemResposta = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Resposta), aux);
+
+	vistaResposta = (Resposta*)MapViewOfFile(hMemResposta, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(Resposta));
+
+	//concatenar pid com nome do evento para ficar com um nome unico
+	_stprintf_s(aux2, TAM_BUFFER, NOME_EVNT_RESPOSTA, pid);
+	hEventoResposta = CreateEvent(NULL, TRUE, FALSE, aux2);
+
+	if (hMemResposta == NULL || hEventoResposta == NULL) {
+		_tprintf(TEXT("[Erro] Criação de objectos do Windows(%d)\n"), GetLastError());
+		return -1;
+	}
 	return 1;
 }
 
@@ -67,12 +92,12 @@ void getLimitesMapa(int *linhas, int *colunas) {
 	
 }
 
-int pede_CriaJogo(ConfigInicial param, int pid) {
+int pede_CriaJogo(ConfigInicial param, int pid, TCHAR username[SIZE_USERNAME]) {
 	Pedido aux;
 	aux.config = param;
 	aux.pid = pid;
 	aux.codigoPedido = CRIARJOGO;
-	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
+	_tcscpy_s(aux.username, SIZE_USERNAME, username);
 	
 	inserePedido(aux);
 
@@ -85,6 +110,28 @@ int pede_IniciaJogo(int pid) {
 	aux.codigoPedido = INICIARJOGO;
 	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
 	
+	inserePedido(aux);
+
+	return 1;
+}
+
+int pede_RegistarClienteLocal(int pid) {
+	Pedido aux;
+	aux.pid = pid;
+	aux.codigoPedido = REGISTACLIENTELOCAL;
+	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
+
+	inserePedido(aux);
+
+	return 1;
+}
+
+int pede_RegistarClienteRemoto(int pid) {
+	Pedido aux;
+	aux.pid = pid;
+	aux.codigoPedido = REGISTACLIENTEREMTO;
+	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
+
 	inserePedido(aux);
 
 	return 1;

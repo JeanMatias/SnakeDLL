@@ -33,12 +33,18 @@ extern DLL_IMP_API HANDLE hPodeLerPedido;
 extern DLL_IMP_API HANDLE hPodeEscreverPedido;
 extern DLL_IMP_API HANDLE hEventoMapa;
 extern DLL_IMP_API HANDLE hFicheiro;
+extern DLL_IMP_API HANDLE hMemResposta;
+extern DLL_IMP_API HANDLE hEventoResposta;
 extern DLL_IMP_API MemGeral *vistaPartilhaGeral;
+extern DLL_IMP_API Resposta *vistaResposta;
 
 //Funções a serem exportadas/importadas
 DLL_IMP_API int preparaMemoriaPartilhada(void);
-DLL_IMP_API int pede_CriaJogo(ConfigInicial param, int pid);
+DLL_IMP_API int preparaMemoriaPartilhadaResposta(int pid);
+DLL_IMP_API int pede_CriaJogo(ConfigInicial param, int pid, TCHAR username[SIZE_USERNAME]);
 DLL_IMP_API int pede_IniciaJogo(int pid);
+DLL_IMP_API int pede_RegistarClienteRemoto(int pid);
+DLL_IMP_API int pede_RegistarClienteLocal(int pid);
 DLL_IMP_API int pede_AssociaJogo(int Pid, TCHAR username[SIZE_USERNAME], int codigoPedido);
 DLL_IMP_API void esperaPorActualizacaoMapa(void);
 DLL_IMP_API void mudaDirecao(int direcao, int Pid, int jogador);

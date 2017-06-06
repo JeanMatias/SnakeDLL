@@ -17,8 +17,10 @@
 #define SIZEMENSAGEM		sizeof(Msg)							// Tamanho da estrutura Msg
 #define SIZE_MEM_GERAL		sizeof(MemGeral)					// Tamanho da Memoria Partilhada Geral
 #define NOME_MEM_GERAL		TEXT("SharedMemGeral")				// Nome da Memoria Partilhada Geral
+#define NOME_MEM_RESPOSTA	TEXT("SharedMemResp_%d")				// Nome da Memoria de Resposta para um cliente especifico
 #define NOME_SEM_MAPA		TEXT("SemaforoMapa")				// Nome do Semaforo do Mapa
 #define NOME_EVNT_MAPA		TEXT("EventoMapa")					// Nome do Evento do Mapa
+#define NOME_EVNT_RESPOSTA	TEXT("EventoResposta_%d")				// Nome do Evento de Respostas para cada cliente que se Liga, será concatenado com o Pid
 #define NOME_SEM_PODELER	TEXT("SemaforoPedidosPodeLer")		// Nome do Semaforo dos Pedidos para avisar que há pedidos para ler
 #define NOME_SEM_PODESCRVR	TEXT("SemaforoPedidosPodeEscrever")	// Nome do Semaforo dos Pedidos para avisar que há espaço para escrever
 #define NOME_FILE_MAP		TEXT("backup.txt")					// Nome do Ficheiro mapeado em memoria
@@ -51,7 +53,8 @@
 #define ASSOCIAR_JOGADOR1	6
 #define ASSOCIAR_JOGADOR2	7
 #define INICIARJOGO			8
-#define REGISTARCLIENTE		9
+#define REGISTACLIENTELOCAL	9
+#define REGISTACLIENTEREMTO 10
 
 //Identificador de Jogador para saber se é o jogador 1 ou 2 de determinada maquina
 #define JOGADOR1			1
@@ -99,6 +102,13 @@
 #define PROB_O_COLA			1300
 #define PROB_SURPRESA		1350
 #define PROB_GRANADA		1400
+
+//CONSTANTES PARA AS RESPOSTAS AOS CLIENTES
+#define	SUCESSO				1
+#define	INSUCESSO			2
+#define	AGORANAO			-1
+#define JOGOCHEIO			-2
+#define CRIADORERRADO		-3
 
 /* ----------------------------------------------------- */
 /*  TIPOS												 */
@@ -161,10 +171,18 @@ typedef struct {
 }Pedido;
 
 typedef struct {
-	int pid;
 	int resposta;
 	int valor;
 }Resposta;
+
+typedef struct {
+	int pid;
+	int remoto;
+	HANDLE hEventoResposta;
+	HANDLE hMemResposta;
+	Resposta *vistaResposta;
+	HANDLE hPipe;
+}Cliente;
 
 typedef struct {
 	Pedido pedidos[MAX_PEDIDOS];
