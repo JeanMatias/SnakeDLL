@@ -48,7 +48,8 @@ DLL_IMP_API int pede_RegistarClienteLocal(int pid);
 DLL_IMP_API int pede_AssociaJogo(int Pid, TCHAR username[SIZE_USERNAME], int codigoPedido);
 DLL_IMP_API void esperaPorActualizacaoMapa(void);
 DLL_IMP_API void mudaDirecao(int direcao, int Pid, int jogador);
-DLL_IMP_API void fechaMemoriaPartilhada(void);
+DLL_IMP_API void fechaMemoriaPartilhadaGeral(void);
+DLL_IMP_API void fechaMemoriaPartilhadaResposta(void);
 DLL_IMP_API void getMapa(int mapa[MAX_LINHAS][MAX_COLUNAS]);
 DLL_IMP_API void getLimitesMapa(int *linhas, int *colunas);
 

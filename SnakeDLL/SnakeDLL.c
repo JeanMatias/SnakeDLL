@@ -48,13 +48,13 @@ int preparaMemoriaPartilhadaResposta(int pid) {
 	//concatenar pid com nome da memoria para ficar com um nome unico
 	_stprintf_s(aux, TAM_BUFFER, NOME_MEM_RESPOSTA, pid);
 
-	hMemResposta = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Resposta), aux);
+	hMemResposta = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, aux);
 
 	vistaResposta = (Resposta*)MapViewOfFile(hMemResposta, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(Resposta));
 
 	//concatenar pid com nome do evento para ficar com um nome unico
 	_stprintf_s(aux2, TAM_BUFFER, NOME_EVNT_RESPOSTA, pid);
-	hEventoResposta = CreateEvent(NULL, TRUE, FALSE, aux2);
+	hEventoResposta = OpenEvent(EVENT_ALL_ACCESS, FALSE, aux2);
 
 	if (hMemResposta == NULL || hEventoResposta == NULL) {
 		_tprintf(TEXT("[Erro] Criação de objectos do Windows(%d)\n"), GetLastError());
@@ -67,11 +67,17 @@ void esperaPorActualizacaoMapa(void) {
 	WaitForSingleObject(hEventoMapa, INFINITE);
 }
 
-void fechaMemoriaPartilhada(void) {
+void fechaMemoriaPartilhadaGeral(void) {
 	CloseHandle(hMemoria);
 	CloseHandle(hSemaforoMapa);
 	CloseHandle(hEventoMapa);
 	UnmapViewOfFile(vistaPartilhaGeral);
+}
+
+void fechaMemoriaPartilhadaResposta(void) {
+	CloseHandle(hMemResposta);
+	CloseHandle(hEventoResposta);
+	UnmapViewOfFile(vistaResposta);
 }
 
 void getMapa(int mapa[MAX_LINHAS][MAX_COLUNAS]) {

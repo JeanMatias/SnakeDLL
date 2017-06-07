@@ -14,6 +14,8 @@
 #define MIN_COLUNAS			10									// Limite minimo de Linhas
 #define MAX_PEDIDOS			5									// Limite maximo na Fila de Pedidos
 #define NUMTIPOOBJECTOS		10									// Tipo de objectos existentes
+#define MAXSEGUNDOSMAPA		30									// Maximo de segundos que objectos ficam no mapa
+#define MINSEGUNDOSMAPA		5									// Minimo de segundos que objectos ficam no mapa
 #define SIZEMENSAGEM		sizeof(Msg)							// Tamanho da estrutura Msg
 #define SIZE_MEM_GERAL		sizeof(MemGeral)					// Tamanho da Memoria Partilhada Geral
 #define NOME_MEM_GERAL		TEXT("SharedMemGeral")				// Nome da Memoria Partilhada Geral
@@ -83,6 +85,7 @@
 #define NUMAUTOSNAKE		1
 #define NUMOBJETOS			6
 #define SEGUNDOSMAPA		10
+#define PERMANENTE			-1
 
 //Factores de Lentidão
 #define LENTIDAO			1000 //valor em milisegundos da lentidão das cobras
@@ -195,5 +198,4 @@ typedef struct {
 	int mapa[MAX_LINHAS][MAX_COLUNAS];
 	int colunas;
 	int linhas;
-	Resposta respostas[MAXCLIENTES];
 }MemGeral;
