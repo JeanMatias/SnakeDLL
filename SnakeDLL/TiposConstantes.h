@@ -88,11 +88,15 @@
 #define PERMANENTE			-1
 
 //Factores de Lentidão
-#define LENTIDAO			1000 //valor em milisegundos da lentidão das cobras
+#define LENTIDAO_NORMAL		750 //valor em milisegundos da lentidão das cobras
+#define LENTIDAO_LEBRE		500
+#define LENTIDAO_TARTARUGA	1000
 #define SEGUNDO				1000 //valor em milisegundos de um segundo para ser usado nos objectos
-#define NORMAL				1	 //Factores que irão ser multiplicados pela Lentidao para alterar a velocidade das Cobras
-#define RAPIDO				0.5
-#define LENTO				1.5
+
+//ciclos de duração dos efeitos nas cobras
+#define CICLOS_TARTARUGA	10 //10 ciclos = 10 segundos de duração do efeito
+#define CICLOS_LEBRE		20 //20 ciclos = 10 segundos de duração do efeito
+#define CICLOS_VODKA		13 //13 ciclos = 9 segundos e 750 milisegundos de duração do efeito :(
 
 //CONSTANTES DE PROBABILIDADES
 #define PROB_ALIMENTO		500
@@ -120,26 +124,6 @@ typedef struct {
 	int PId;
 	int codigoMsg;
 }Mensagem;
-
-typedef struct {
-	TCHAR username[SIZE_USERNAME];
-	int pontuacaoTotal;
-	int numJogos;
-	int numVitorias;
-}Jogador;
-
-typedef struct {
-	int pid;
-	int jogador;
-	TCHAR username[SIZE_USERNAME];
-	int tamanho;
-	int porAparecer;
-	int pontuacao;
-	int direcao;
-	int estadoJogador;
-	int factorLentidao;
-	int posicoesCobra[MAX_COLUNAS * MAX_LINHAS][2];
-}Cobras;
 
 typedef struct {
 	int T;			//Tamanho inicial das Serpentes

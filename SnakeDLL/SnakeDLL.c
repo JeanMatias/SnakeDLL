@@ -36,8 +36,6 @@ int preparaMemoriaPartilhada(void) {
 		return -1;
 	}
 
-	vistaPartilhaGeral->fila.frente = 0;
-	vistaPartilhaGeral->fila.tras = 0;
 	return 1;
 }
 
