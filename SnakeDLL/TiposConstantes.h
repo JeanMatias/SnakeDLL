@@ -4,7 +4,7 @@
 /*  CONSTANTES											 */
 /* ----------------------------------------------------- */
 #define SIZE_USERNAME		30									// Max chars do utilizador
-#define TAM_BUFFER			20									// Tamanho de Buffer a utilizar no CLiente
+#define TAM_BUFFER			25									// Tamanho de Buffer a utilizar no CLiente
 #define MAXCLIENTES			4									// Maximo de Clientes 
 #define MAXJOGADORES		4									// Max jogadores permitido
 #define MAXOBJECTOS			30									// Max objectos no mapa permitidos
