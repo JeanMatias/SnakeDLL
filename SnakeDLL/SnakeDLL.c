@@ -21,15 +21,15 @@ int preparaMemoriaPartilhada(void) {
 
 	//hFicheiro = CreateFile(NOME_FILE_MAP, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-	hMemoria = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, SIZE_MEM_GERAL, NOME_MEM_GERAL);
+	hMemoria = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, NOME_MEM_GERAL);
 
 	vistaPartilhaGeral = (MemGeral*)MapViewOfFile(hMemoria, FILE_MAP_ALL_ACCESS, 0, 0, SIZE_MEM_GERAL);
 
-	hEventoMapa = CreateEvent(NULL, TRUE, FALSE, NOME_EVNT_MAPA);
-	hSemaforoMapa = CreateSemaphore(NULL, MAXCLIENTES, MAXCLIENTES, NOME_SEM_MAPA);
+	hEventoMapa = OpenEvent(EVENT_ALL_ACCESS, FALSE, NOME_EVNT_MAPA);
+	hSemaforoMapa = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, NOME_SEM_MAPA);
 
-	hPodeLerPedido = CreateSemaphore(NULL, 0, MAX_PEDIDOS, NOME_SEM_PODELER);
-	hPodeEscreverPedido = CreateSemaphore(NULL, MAX_PEDIDOS, MAX_PEDIDOS, NOME_SEM_PODESCRVR);
+	hPodeLerPedido = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, NOME_SEM_PODELER);
+	hPodeEscreverPedido = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, NOME_SEM_PODESCRVR);
 
 	if (hMemoria == NULL || hEventoMapa == NULL || hSemaforoMapa == NULL || hPodeLerPedido == NULL || hPodeEscreverPedido == NULL) {
 		_tprintf(TEXT("[Erro] Criação de objectos do Windows(%d)\n"), GetLastError());
