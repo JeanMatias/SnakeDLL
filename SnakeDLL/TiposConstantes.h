@@ -8,10 +8,10 @@
 #define MAXCLIENTES			4									// Maximo de Clientes 
 #define MAXJOGADORES		4									// Max jogadores permitido
 #define MAXOBJECTOS			30									// Max objectos no mapa permitidos
-#define MAX_LINHAS			40									// Limite maximo de Linhas
-#define MAX_COLUNAS			80									// Limite maximo de Colunas
-#define MIN_LINHAS			10									// Limite minimo de Linhas
-#define MIN_COLUNAS			10									// Limite minimo de Linhas
+#define MAX_LINHAS			30									// Limite maximo de Linhas
+#define MAX_COLUNAS			60									// Limite maximo de Colunas
+#define MIN_LINHAS			15									// Limite minimo de Linhas
+#define MIN_COLUNAS			15									// Limite minimo de Linhas
 #define MAX_PEDIDOS			5									// Limite maximo na Fila de Pedidos
 #define NUMTIPOOBJECTOS		10									// Tipo de objectos existentes
 #define MAXSEGUNDOSMAPA		30									// Maximo de segundos que objectos ficam no mapa
@@ -78,8 +78,8 @@
 #define SURPRESA			10  
 
 //Valores configuraveis por defeito
-#define LINHAS				40
-#define COLUNAS				40
+#define LINHAS				20
+#define COLUNAS				20
 #define TAMANHOSNAKE		3
 #define NUMJOGADORES		1
 #define NUMAUTOSNAKE		1
@@ -96,7 +96,7 @@
 //ciclos de duração dos efeitos nas cobras
 #define CICLOS_TARTARUGA	10 //10 ciclos = 10 segundos de duração do efeito
 #define CICLOS_LEBRE		20 //20 ciclos = 10 segundos de duração do efeito
-#define CICLOS_VODKA		13 //13 ciclos = 9 segundos e 750 milisegundos de duração do efeito :(
+#define CICLOS_VODKA		14 //14 ciclos = 10 segundos e 500 milisegundos de duração do efeito :(
 
 //CONSTANTES DE PROBABILIDADES
 #define PROB_ALIMENTO		500
@@ -117,6 +117,10 @@
 #define JOGOCHEIO			-2
 #define CRIADORERRADO		-3
 
+//CONSTANTES PARA TIPOS DE JOGO
+#define SINGLEPLAYER		1
+#define MULTIPLAYER			2
+
 /* ----------------------------------------------------- */
 /*  TIPOS												 */
 /* ----------------------------------------------------- */
@@ -133,14 +137,6 @@ typedef struct {
 	int L;			//Tamanho do Mapa em Linhas
 	int C;			//Tamanho do Mapa em Colunas
 }ConfigInicial;
-
-//Estrutura para manutenção dos objectos no jogo
-typedef struct {
-	int Tipo;				//Tipo de Objecto (1-Alimento, 2-Gelo, 3-Granada, 4-Vodka, 5-Oleo, 6-Cola, 7-OVodka, 8-OOleo, 9-OCola)
-	int linha;				//Posição no mapa
-	int coluna;				//Posição no mapa
-	int segundosRestantes;	//Segundos que restam ao objecto para este desaparecer
-}Objecto;
 
 //Estrutura de configuração dos objectos
 typedef struct {
@@ -161,15 +157,6 @@ typedef struct {
 	int resposta;
 	int valor;
 }Resposta;
-
-typedef struct {
-	int pid;
-	int remoto;
-	HANDLE hEventoResposta;
-	HANDLE hMemResposta;
-	Resposta *vistaResposta;
-	HANDLE hPipe;
-}Cliente;
 
 typedef struct {
 	Pedido pedidos[MAX_PEDIDOS];
