@@ -18,9 +18,8 @@ void inserePedido(Pedido param);
 
 
 int preparaMemoriaPartilhada(void) {
-
 	//hFicheiro = CreateFile(NOME_FILE_MAP, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
+	
 	hMemoria = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, NOME_MEM_GERAL);
 
 	vistaPartilhaGeral = (MemGeral*)MapViewOfFile(hMemoria, FILE_MAP_ALL_ACCESS, 0, 0, SIZE_MEM_GERAL);
@@ -39,19 +38,19 @@ int preparaMemoriaPartilhada(void) {
 	return 1;
 }
 
-int preparaMemoriaPartilhadaResposta(int pid) {
+int preparaMemoriaPartilhadaResposta(int pid, int tid) {
 	TCHAR aux[TAM_BUFFER];
 	TCHAR aux2[TAM_BUFFER];
 
 	//concatenar pid com nome da memoria para ficar com um nome unico
-	_stprintf_s(aux, TAM_BUFFER, NOME_MEM_RESPOSTA, pid);
+	_stprintf_s(aux, TAM_BUFFER, NOME_MEM_RESPOSTA, pid, tid);
 
 	hMemResposta = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, aux);
 
 	vistaResposta = (Resposta*)MapViewOfFile(hMemResposta, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(Resposta));
 
 	//concatenar pid com nome do evento para ficar com um nome unico
-	_stprintf_s(aux2, TAM_BUFFER, NOME_EVNT_RESPOSTA, pid);
+	_stprintf_s(aux2, TAM_BUFFER, NOME_EVNT_RESPOSTA, pid, tid);
 	hEventoResposta = OpenEvent(EVENT_ALL_ACCESS, FALSE, aux2);
 
 	if (hMemResposta == NULL || hEventoResposta == NULL) {
@@ -96,10 +95,11 @@ void getLimitesMapa(int *linhas, int *colunas) {
 	
 }
 
-int pede_CriaJogo(ConfigInicial param, int pid, TCHAR username[SIZE_USERNAME]) {
+int pede_CriaJogo(ConfigInicial param, int pid, int tid, TCHAR username[SIZE_USERNAME]) {
 	Pedido aux;
 	aux.config = param;
 	aux.pid = pid;
+	aux.tid = tid;
 	aux.codigoPedido = CRIARJOGO;
 	_tcscpy_s(aux.username, SIZE_USERNAME, username);
 	
@@ -108,9 +108,10 @@ int pede_CriaJogo(ConfigInicial param, int pid, TCHAR username[SIZE_USERNAME]) {
 	return 1;
 }
 
-int pede_IniciaJogo(int pid) {
+int pede_IniciaJogo(int pid, int tid) {
 	Pedido aux;
 	aux.pid = pid;
+	aux.tid = tid;
 	aux.codigoPedido = INICIARJOGO;
 	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
 	
@@ -119,9 +120,10 @@ int pede_IniciaJogo(int pid) {
 	return 1;
 }
 
-int pede_RegistarClienteLocal(int pid) {
+int pede_RegistarClienteLocal(int pid, int tid) {
 	Pedido aux;
 	aux.pid = pid;
+	aux.tid = tid;
 	aux.codigoPedido = REGISTACLIENTELOCAL;
 	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
 
@@ -141,10 +143,11 @@ int pede_RegistarClienteRemoto(int pid) {
 	return 1;
 }
 
-int pede_AssociaJogo(int Pid, TCHAR username[SIZE_USERNAME], int codigoPedido) {
+int pede_AssociaJogo(int pid,int tid, TCHAR username[SIZE_USERNAME], int codigoPedido) {
 	Pedido aux;
 	aux.codigoPedido = codigoPedido;
-	aux.pid = Pid;
+	aux.pid = pid;
+	aux.tid = tid;
 	_tcscpy_s(aux.username, SIZE_USERNAME, username);
 
 	inserePedido(aux);
@@ -153,9 +156,10 @@ int pede_AssociaJogo(int Pid, TCHAR username[SIZE_USERNAME], int codigoPedido) {
 }
 
 
-void mudaDirecao(int direcao, int Pid, int jogador) {
+void mudaDirecao(int direcao, int pid, int tid, int jogador) {
 	Pedido aux;
-	aux.pid = Pid;
+	aux.pid = pid;
+	aux.tid = tid;
 	aux.codigoPedido = direcao;
 	aux.jogador = jogador;
 	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
@@ -170,6 +174,7 @@ void inserePedido(Pedido param) {
 	WaitForSingleObject(hPodeEscreverPedido, INFINITE);
 
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].pid = param.pid;
+	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].tid = param.tid;
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].codigoPedido = param.codigoPedido;
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].config = param.config;
 	vistaPartilhaGeral->fila.pedidos[vistaPartilhaGeral->fila.tras].jogador = param.jogador;

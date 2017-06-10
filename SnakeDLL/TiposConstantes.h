@@ -4,7 +4,7 @@
 /*  CONSTANTES											 */
 /* ----------------------------------------------------- */
 #define SIZE_USERNAME		30									// Max chars do utilizador
-#define TAM_BUFFER			25									// Tamanho de Buffer a utilizar no CLiente
+#define TAM_BUFFER			30									// Tamanho de Buffer a utilizar no CLiente
 #define MAXCLIENTES			4									// Maximo de Clientes 
 #define MAXJOGADORES		4									// Max jogadores permitido
 #define MAXOBJECTOS			30									// Max objectos no mapa permitidos
@@ -19,12 +19,13 @@
 #define SIZEMENSAGEM		sizeof(Msg)							// Tamanho da estrutura Msg
 #define SIZE_MEM_GERAL		sizeof(MemGeral)					// Tamanho da Memoria Partilhada Geral
 #define NOME_MEM_GERAL		TEXT("SharedMemGeral")				// Nome da Memoria Partilhada Geral
-#define NOME_MEM_RESPOSTA	TEXT("SharedMemResp_%d")				// Nome da Memoria de Resposta para um cliente especifico
+#define NOME_MEM_RESPOSTA	TEXT("SharedMemResp_%d_%d")			// Nome da Memoria de Resposta para um cliente especifico
 #define NOME_SEM_MAPA		TEXT("SemaforoMapa")				// Nome do Semaforo do Mapa
 #define NOME_EVNT_MAPA		TEXT("EventoMapa")					// Nome do Evento do Mapa
-#define NOME_EVNT_RESPOSTA	TEXT("EventoResposta_%d")				// Nome do Evento de Respostas para cada cliente que se Liga, será concatenado com o Pid
+#define NOME_EVNT_RESPOSTA	TEXT("EventoResposta_%d_%d")		// Nome do Evento de Respostas para cada cliente que se Liga, será concatenado com o Pid
 #define NOME_SEM_PODELER	TEXT("SemaforoPedidosPodeLer")		// Nome do Semaforo dos Pedidos para avisar que há pedidos para ler
 #define NOME_SEM_PODESCRVR	TEXT("SemaforoPedidosPodeEscrever")	// Nome do Semaforo dos Pedidos para avisar que há espaço para escrever
+#define NOME_MUTEX_TESTE	TEXT("ClienteUnicoNestaMaquina")	// Nome do Mutex que serve apenas para garantir que o cliente é unico na maquina
 #define NOME_FILE_MAP		TEXT("backup.txt")					// Nome do Ficheiro mapeado em memoria
 
 //Estados de Jogo
@@ -146,6 +147,7 @@ typedef struct {
 
 typedef struct {
 	int pid;
+	int tid;
 	int codigoPedido;
 	int jogador;
 	ConfigInicial config;

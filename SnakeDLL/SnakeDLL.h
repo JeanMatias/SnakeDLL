@@ -40,14 +40,14 @@ extern DLL_IMP_API Resposta *vistaResposta;
 
 //Funções a serem exportadas/importadas
 DLL_IMP_API int preparaMemoriaPartilhada(void);
-DLL_IMP_API int preparaMemoriaPartilhadaResposta(int pid);
-DLL_IMP_API int pede_CriaJogo(ConfigInicial param, int pid, TCHAR username[SIZE_USERNAME]);
-DLL_IMP_API int pede_IniciaJogo(int pid);
+DLL_IMP_API int preparaMemoriaPartilhadaResposta(int pid, int tid);
+DLL_IMP_API int pede_CriaJogo(ConfigInicial param, int pid, int tid, TCHAR username[SIZE_USERNAME]);
+DLL_IMP_API int pede_IniciaJogo(int pid, int tid);
 DLL_IMP_API int pede_RegistarClienteRemoto(int pid);
-DLL_IMP_API int pede_RegistarClienteLocal(int pid);
-DLL_IMP_API int pede_AssociaJogo(int Pid, TCHAR username[SIZE_USERNAME], int codigoPedido);
+DLL_IMP_API int pede_RegistarClienteLocal(int pid, int tid);
+DLL_IMP_API int pede_AssociaJogo(int pid, int tid, TCHAR username[SIZE_USERNAME], int codigoPedido);
 DLL_IMP_API void esperaPorActualizacaoMapa(void);
-DLL_IMP_API void mudaDirecao(int direcao, int Pid, int jogador);
+DLL_IMP_API void mudaDirecao(int direcao, int pid, int tid, int jogador);
 DLL_IMP_API void fechaMemoriaPartilhadaGeral(void);
 DLL_IMP_API void fechaMemoriaPartilhadaResposta(void);
 DLL_IMP_API void getMapa(int mapa[MAX_LINHAS][MAX_COLUNAS]);
