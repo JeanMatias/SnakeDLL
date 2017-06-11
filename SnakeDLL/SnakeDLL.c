@@ -45,18 +45,21 @@ int preparaMemoriaPartilhadaResposta(int pid, int tid) {
 	//concatenar pid com nome da memoria para ficar com um nome unico
 	_stprintf_s(aux, TAM_BUFFER, NOME_MEM_RESPOSTA, pid, tid);
 
-	hMemResposta = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, aux);
-
-	vistaResposta = (Resposta*)MapViewOfFile(hMemResposta, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(Resposta));
-
 	//concatenar pid com nome do evento para ficar com um nome unico
 	_stprintf_s(aux2, TAM_BUFFER, NOME_EVNT_RESPOSTA, pid, tid);
-	hEventoResposta = OpenEvent(EVENT_ALL_ACCESS, FALSE, aux2);
 
-	if (hMemResposta == NULL || hEventoResposta == NULL) {
-		_tprintf(TEXT("[Erro] Criação de objectos do Windows(%d)\n"), GetLastError());
-		return -1;
+	while (1) {
+		hMemResposta = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, aux);
+
+		vistaResposta = (Resposta*)MapViewOfFile(hMemResposta, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(Resposta));
+
+		hEventoResposta = OpenEvent(EVENT_ALL_ACCESS, FALSE, aux2);
+
+		if (GetLastError() == ERROR_SUCCESS) {
+			break;
+		}
 	}
+
 	return 1;
 }
 
