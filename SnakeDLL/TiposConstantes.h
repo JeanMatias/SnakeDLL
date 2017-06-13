@@ -57,7 +57,8 @@
 #define ASSOCIAR_JOGADOR2	7
 #define INICIARJOGO			8
 #define REGISTACLIENTELOCAL	9
-#define REGISTACLIENTEREMTO 10
+#define SAIR				10
+#define REGISTACLIENTEREMTO 11
 
 //Identificador de Jogador para saber se é o jogador 1 ou 2 de determinada maquina
 #define JOGADOR1			1

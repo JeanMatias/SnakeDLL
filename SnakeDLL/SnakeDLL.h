@@ -41,7 +41,8 @@ extern DLL_IMP_API Resposta *vistaResposta;
 //Funções a serem exportadas/importadas
 DLL_IMP_API int preparaMemoriaPartilhada(void);
 DLL_IMP_API int preparaMemoriaPartilhadaResposta(int pid, int tid);
-DLL_IMP_API int pede_CriaJogo(ConfigInicial param, int pid, int tid, TCHAR username[SIZE_USERNAME]);
+DLL_IMP_API int pede_CriaJogo(ConfigInicial param, int pid, int tid, TCHAR username[SIZE_USERNAME],ConfigObjecto objectosConfig[NUMTIPOOBJECTOS]);
+DLL_IMP_API int pede_Sair(int pid, int tid);
 DLL_IMP_API int pede_IniciaJogo(int pid, int tid);
 DLL_IMP_API int pede_RegistarClienteRemoto(int pid);
 DLL_IMP_API int pede_RegistarClienteLocal(int pid, int tid);

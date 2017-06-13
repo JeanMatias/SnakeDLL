@@ -42,6 +42,8 @@ int preparaMemoriaPartilhadaResposta(int pid, int tid) {
 	TCHAR aux[TAM_BUFFER];
 	TCHAR aux2[TAM_BUFFER];
 
+	int teste;
+
 	//concatenar pid com nome da memoria para ficar com um nome unico
 	_stprintf_s(aux, TAM_BUFFER, NOME_MEM_RESPOSTA, pid, tid);
 
@@ -55,9 +57,16 @@ int preparaMemoriaPartilhadaResposta(int pid, int tid) {
 
 		hEventoResposta = OpenEvent(EVENT_ALL_ACCESS, FALSE, aux2);
 
-		if (GetLastError() == ERROR_SUCCESS) {
+	/*	if (GetLastError() == ERROR_SUCCESS)
 			break;
-		}
+		if (GetLastError() != ERROR_INVALID_HANDLE)
+			break;
+		if(GetLastError() != ERROR_FILE_NOT_FOUND)
+			break;
+		*/
+		
+		if (hMemResposta != NULL || hEventoResposta != NULL || vistaResposta != NULL)
+			break;
 	}
 
 	return 1;
@@ -98,13 +107,17 @@ void getLimitesMapa(int *linhas, int *colunas) {
 	
 }
 
-int pede_CriaJogo(ConfigInicial param, int pid, int tid, TCHAR username[SIZE_USERNAME]) {
+int pede_CriaJogo(ConfigInicial param, int pid, int tid, TCHAR username[SIZE_USERNAME], ConfigObjecto objectosConfig[NUMTIPOOBJECTOS]) {
 	Pedido aux;
 	aux.config = param;
 	aux.pid = pid;
 	aux.tid = tid;
 	aux.codigoPedido = CRIARJOGO;
 	_tcscpy_s(aux.username, SIZE_USERNAME, username);
+	for (int i = 0; i < NUMTIPOOBJECTOS; i++) {
+		aux.objectosConfig[i].S = objectosConfig[i].S;
+		aux.objectosConfig[i].Tipo = objectosConfig[i].Tipo;
+	}
 	
 	inserePedido(aux);
 
@@ -118,6 +131,18 @@ int pede_IniciaJogo(int pid, int tid) {
 	aux.codigoPedido = INICIARJOGO;
 	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
 	
+	inserePedido(aux);
+
+	return 1;
+}
+
+int pede_Sair(int pid, int tid) {
+	Pedido aux;
+	aux.pid = pid;
+	aux.tid = tid;
+	aux.codigoPedido = SAIR;
+	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
+
 	inserePedido(aux);
 
 	return 1;
