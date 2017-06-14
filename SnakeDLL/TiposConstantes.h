@@ -4,7 +4,10 @@
 /*  CONSTANTES											 */
 /* ----------------------------------------------------- */
 #define SIZE_USERNAME		30									// Max chars do utilizador
+#define SIZE_IP				16									// Max chars para o IP
+#define SIZE_PIPENAME		30									// Max chars para o nome do Pipe Remoto
 #define TAM_BUFFER			35									// Tamanho de Buffer a utilizar no CLiente
+#define TIMEOUT_VAGA		30000								// Tempo que cliente espera por vaga no servidor
 #define MAXCLIENTES			4									// Maximo de Clientes 
 #define MAXJOGADORES		4									// Max jogadores permitido
 #define MAXOBJECTOS			30									// Max objectos no mapa permitidos
@@ -16,7 +19,8 @@
 #define NUMTIPOOBJECTOS		10									// Tipo de objectos existentes
 #define MAXSEGUNDOSMAPA		30									// Maximo de segundos que objectos ficam no mapa
 #define MINSEGUNDOSMAPA		5									// Minimo de segundos que objectos ficam no mapa
-#define SIZEMENSAGEM		sizeof(Msg)							// Tamanho da estrutura Msg
+#define SIZEPEDIDO			sizeof(Pedido)						// Tamanho da estrutura Pedido
+#define SIZERESPOSTA		sizeof(Resposta)					// Tamanho da estrutura Resposta
 #define SIZE_MEM_GERAL		sizeof(MemGeral)					// Tamanho da Memoria Partilhada Geral
 #define NOME_MEM_GERAL		TEXT("SharedMemGeral")				// Nome da Memoria Partilhada Geral
 #define NOME_MEM_RESPOSTA	TEXT("SharedMemResp_%d_%d")			// Nome da Memoria de Resposta para um cliente especifico
@@ -26,6 +30,7 @@
 #define NOME_SEM_PODELER	TEXT("SemaforoPedidosPodeLer")		// Nome do Semaforo dos Pedidos para avisar que há pedidos para ler
 #define NOME_SEM_PODESCRVR	TEXT("SemaforoPedidosPodeEscrever")	// Nome do Semaforo dos Pedidos para avisar que há espaço para escrever
 #define NOME_MUTEX_TESTE	TEXT("ClienteUnicoNestaMaquina")	// Nome do Mutex que serve apenas para garantir que o cliente é unico na maquina
+#define PIPE_ATENDE			TEXT("\\\\%s\\pipe\\Pedidos")		// Nome do pipe de leitura dos pedidos dos Clientes com formatação para concatenar string
 #define NOME_FILE_MAP		TEXT("backup.txt")					// Nome do Ficheiro mapeado em memoria
 
 //Estados de Jogo
@@ -128,6 +133,7 @@
 /* ----------------------------------------------------- */
 typedef struct {
 	int PId;
+	int TId;
 	int codigoMsg;
 }Mensagem;
 

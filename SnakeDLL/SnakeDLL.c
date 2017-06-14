@@ -160,9 +160,10 @@ int pede_RegistarClienteLocal(int pid, int tid) {
 	return 1;
 }
 
-int pede_RegistarClienteRemoto(int pid) {
+int pede_RegistarClienteRemoto(int pid, int tid) {
 	Pedido aux;
 	aux.pid = pid;
+	aux.tid = tid;
 	aux.codigoPedido = REGISTACLIENTEREMTO;
 	_tcscpy_s(aux.username, SIZE_USERNAME, TEXT(" "));
 
@@ -197,7 +198,6 @@ void mudaDirecao(int direcao, int pid, int tid, int jogador) {
 
 
 void inserePedido(Pedido param) {
-
 	//Espera que haja uma vaga para escrever um pedido
 	WaitForSingleObject(hPodeEscreverPedido, INFINITE);
 
@@ -217,4 +217,5 @@ void inserePedido(Pedido param) {
 
 	//Liberta uma vaga para Ler um pedido
 	ReleaseSemaphore(hPodeLerPedido, 1, NULL);
+
 }

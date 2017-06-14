@@ -44,7 +44,7 @@ DLL_IMP_API int preparaMemoriaPartilhadaResposta(int pid, int tid);
 DLL_IMP_API int pede_CriaJogo(ConfigInicial param, int pid, int tid, TCHAR username[SIZE_USERNAME],ConfigObjecto objectosConfig[NUMTIPOOBJECTOS]);
 DLL_IMP_API int pede_Sair(int pid, int tid);
 DLL_IMP_API int pede_IniciaJogo(int pid, int tid);
-DLL_IMP_API int pede_RegistarClienteRemoto(int pid);
+DLL_IMP_API int pede_RegistarClienteRemoto(int pid, int tid);
 DLL_IMP_API int pede_RegistarClienteLocal(int pid, int tid);
 DLL_IMP_API int pede_AssociaJogo(int pid, int tid, TCHAR username[SIZE_USERNAME], int codigoPedido);
 DLL_IMP_API void esperaPorActualizacaoMapa(void);
